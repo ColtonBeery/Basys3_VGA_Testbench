@@ -41,40 +41,28 @@ module top(
     reg mode = 0;
     
     //block existence
-    reg [3:0] counter;
+    reg [3:0] counter1, counter2;
     reg [0:15] block_exists;
     always @(posedge clk) begin
         case (mode)
             0: begin
-                for (counter = 0; counter < 8; counter = counter + 1) begin
-                    block_exists[counter] <= ((x > ((MAX_X/8)*counter)) & (y > 0) & (x <= ((MAX_X/8)*(counter+1))) & (y < 480)) ? 1 : 0;
+                for (counter1 = 0; counter1 < 8; counter1 = counter1 + 1) begin
+                    if ((x < MAX_X) & (x > 0) & (y < MAX_Y) | (y > 0))
+                        block_exists[counter1] <= ((x > ((MAX_X/8)*counter1)) & (y > 0) & (x <= ((MAX_X/8)*(counter1+1))) & (y < 480)) ? 1 : 0;
+                    else 
+                        block_exists[counter1] <= 0;
                 end 
                 block_exists[8:15] <= 0;
             end
             1: begin
-                // I really want to use for loops here, like I did above, but vivado won't let me.  
-                block_exists[0] <= ((x > 0) & (y > 0) & (x <= (MAX_X/16)) & (y < 480)) ? 1 : 0;
-                block_exists[1] <= ((x > (MAX_X/16)) & (y > 0) & (x <= ((MAX_X/16)*2)) & (y < 480)) ? 1 : 0;
-                block_exists[2] <= ((x > ((MAX_X/16)*2)) & (y > 0) & (x <= ((MAX_X/16)*3)) & (y < 480)) ? 1 : 0;
-                block_exists[3] <= ((x > ((MAX_X/16)*3)) & (y > 0) & (x <= ((MAX_X/16)*4)) & (y < 480)) ? 1 : 0;
-                block_exists[4] <= ((x > ((MAX_X/16)*4)) & (y > 0) & (x <= ((MAX_X/16)*5)) & (y < 480)) ? 1 : 0;
-                block_exists[5] <= ((x > ((MAX_X/16)*5)) & (y > 0) & (x <= ((MAX_X/16)*6)) & (y < 480)) ? 1 : 0;
-                block_exists[6] <= ((x > ((MAX_X/16)*6)) & (y > 0) & (x <= ((MAX_X/16)*7)) & (y < 480)) ? 1 : 0;
-                block_exists[7] <= ((x > ((MAX_X/16)*7)) & (y > 0) & (x <= ((MAX_X/16)*8)) & (y < 480)) ? 1 : 0;
-                block_exists[8] <= ((x > ((MAX_X/16)*8)) & (y > 0) & (x <= ((MAX_X/16)*9)) & (y < 480)) ? 1 : 0;
-                block_exists[9] <= ((x > ((MAX_X/16)*9)) & (y > 0) & (x <= ((MAX_X/16)*10)) & (y < 480)) ? 1 : 0;
-                block_exists[10] <= ((x > ((MAX_X/16)*10)) & (y > 0) & (x <= ((MAX_X/16)*11)) & (y < 480)) ? 1 : 0;
-                block_exists[11] <= ((x > ((MAX_X/16)*11)) & (y > 0) & (x <= ((MAX_X/16)*12)) & (y < 480)) ? 1 : 0;
-                block_exists[12] <= ((x > ((MAX_X/16)*12)) & (y > 0) & (x <= ((MAX_X/16)*13)) & (y < 480)) ? 1 : 0;
-                block_exists[13] <= ((x > ((MAX_X/16)*13)) & (y > 0) & (x <= ((MAX_X/16)*14)) & (y < 480)) ? 1 : 0;
-                block_exists[14] <= ((x > ((MAX_X/16)*14)) & (y > 0) & (x <= ((MAX_X/16)*15)) & (y < 480)) ? 1 : 0;
-                block_exists[15] <= ((x > ((MAX_X/16)*15)) & (y > 0) & (x < MAX_X) & (y < 480)) ? 1 : 0;
-                /*counter <= 0;
-                repeat (14) begin
-                    block_exists[counter] <= ((x > ((MAX_X/16)*counter)) & (y > 0) & (x <= ((MAX_X/16)*(counter+1))) & (y < 480)) ? 1 : 0;
-                    counter <= counter + 1;
+                counter1 <= 0;
+                repeat (15) begin
+                    if ((x < MAX_X) & (x > 0) & (y < MAX_Y) | (y > 0))
+                        block_exists[counter1] <= ((x > ((MAX_X/16)*counter1)) & (y > 0) & (x <= ((MAX_X/16)*(counter1+1))) & (y < 480)) ? 1 : 0;
+                    else 
+                        block_exists[counter1] <= 0;
+                    counter1 <= counter1 + 1;
                 end
-                block_exists[15] <= ((x > ((MAX_X/16)*15)) & (y > 0) & (x < MAX_X) & (y < 480)) ? 1 : 0;*/
             end
         endcase
     end
@@ -126,85 +114,14 @@ module top(
                 end //end black square
             end //end full color bars
             1: begin//black and white bars
-                if (block_exists[0]) begin //black square
-                    VGA_Red <= 0;
-                    VGA_Green <= 0;
-                    VGA_Blue <= 0;
-                end //end black square
-                if (block_exists[1]) begin 
-                    VGA_Red <= 1;
-                    VGA_Green <= 1;
-                    VGA_Blue <= 1;
-                end 
-                if (block_exists[2]) begin
-                    VGA_Red <= 2;
-                    VGA_Green <= 2;
-                    VGA_Blue <= 2;
-                end 
-                if (block_exists[3]) begin
-                    VGA_Red <= 3;
-                    VGA_Green <= 3;
-                    VGA_Blue <= 3;
-                end 
-                if (block_exists[4]) begin 
-                    VGA_Red <= 4;
-                    VGA_Green <= 4;
-                    VGA_Blue <= 4;
-                end 
-                if (block_exists[5]) begin
-                    VGA_Red <= 5;
-                    VGA_Green <= 5;
-                    VGA_Blue <= 5;
-                end //end pink square
-                if (block_exists[6]) begin
-                    VGA_Red <= 6;
-                    VGA_Green <= 6;
-                    VGA_Blue <= 6;
-                end 
-                if (block_exists[7]) begin
-                    VGA_Red <= 7;
-                    VGA_Green <= 7;
-                    VGA_Blue <= 7;
-                end
-                if (block_exists[8]) begin
-                    VGA_Red <= 8;
-                    VGA_Green <= 8;
-                    VGA_Blue <= 8;
-                end
-                if (block_exists[9]) begin
-                    VGA_Red <= 9;
-                    VGA_Green <= 9;
-                    VGA_Blue <= 9;
-                end
-                if (block_exists[10]) begin
-                    VGA_Red <= 10;
-                    VGA_Green <= 10;
-                    VGA_Blue <= 10;
-                end
-                if (block_exists[11]) begin
-                    VGA_Red <= 11;
-                    VGA_Green <= 11;
-                    VGA_Blue <= 11;
-                end
-                if (block_exists[12]) begin
-                    VGA_Red <= 12;
-                    VGA_Green <= 12;
-                    VGA_Blue <= 12;
-                end
-                if (block_exists[13]) begin
-                    VGA_Red <= 13;
-                    VGA_Green <= 13;
-                    VGA_Blue <= 13;
-                end
-                if (block_exists[14]) begin
-                    VGA_Red <= 14;
-                    VGA_Green <= 14;
-                    VGA_Blue <= 14;
-                end
-                if (block_exists[15]) begin
-                    VGA_Red <= 15;
-                    VGA_Green <= 15;
-                    VGA_Blue <= 15;
+                counter2 <= 0;
+                repeat (15) begin
+                    if (block_exists[counter2]) begin // black square
+                        VGA_Red <= counter2;
+                        VGA_Green <= counter2;
+                        VGA_Blue <= counter2;
+                    end
+                    counter2 <= counter2 + 1;
                 end
             end //end black and white bars
             default: begin //if error, whole screen white
@@ -213,5 +130,11 @@ module top(
                 VGA_Blue <= 15;
             end
         endcase
-    end
+        
+        if ( (x <= 0) | (x >= MAX_X) | (y <= 0) | (y >= MAX_Y) ) begin
+            VGA_Red <= 0;
+            VGA_Green <= 0;
+            VGA_Blue <= 0;
+        end
+    end 
 endmodule
