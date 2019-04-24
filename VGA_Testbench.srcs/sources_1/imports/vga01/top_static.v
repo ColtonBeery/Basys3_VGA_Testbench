@@ -14,7 +14,6 @@ module top(
     output reg [3:0] VGA_Blue     // 4-bit VGA blue output
     );
 
-    //wire rst = ~IO_BTN_C;    // reset is active low on Arty & Nexys Video
     wire rst = IO_BTN_C;  // reset is active high on Basys3 (BTNC)
 
     // generate a 25 MHz pixel strobe
@@ -36,56 +35,53 @@ module top(
         .o_y(y)
     );
 
-    wire sq_a, sq_b, sq_c, sq_d, sq_e, sq_f, sq_g, sq_h;
-    assign sq_a = ((x > 0) & (y > 0) & (x <= 80) & (y < 480)) ? 1 : 0;
-    assign sq_b = ((x > 80) & (y > 0) & (x <= 160) & (y < 480)) ? 1 : 0;
-    assign sq_c = ((x > 160) & (y > 0) & (x <= 240) & (y < 480)) ? 1 : 0;
-    assign sq_d = ((x > 240) & (y > 0) & (x <= 320) & (y < 480)) ? 1 : 0;
-    assign sq_e = ((x > 320) & (y > 0) & (x <= 400) & (y < 480)) ? 1 : 0;
-    assign sq_f = ((x > 400) & (y > 0) & (x <= 480) & (y < 480)) ? 1 : 0;
-    assign sq_g = ((x > 480) & (y > 0) & (x <= 560) & (y < 480)) ? 1 : 0;
-    assign sq_h = ((x > 560) & (y > 0) & (x <= 640) & (y < 480)) ? 1 : 0;
+    wire [0:7] block_exists;
+    assign block_exists[0] = ((x > 0) & (y > 0) & (x <= 80) & (y < 480)) ? 1 : 0;
+    assign block_exists[1] = ((x > 80) & (y > 0) & (x <= 160) & (y < 480)) ? 1 : 0;
+    assign block_exists[2] = ((x > 160) & (y > 0) & (x <= 240) & (y < 480)) ? 1 : 0;
+    assign block_exists[3] = ((x > 240) & (y > 0) & (x <= 320) & (y < 480)) ? 1 : 0;
+    assign block_exists[4] = ((x > 320) & (y > 0) & (x <= 400) & (y < 480)) ? 1 : 0;
+    assign block_exists[5] = ((x > 400) & (y > 0) & (x <= 480) & (y < 480)) ? 1 : 0;
+    assign block_exists[6] = ((x > 480) & (y > 0) & (x <= 560) & (y < 480)) ? 1 : 0;
+    assign block_exists[7] = ((x > 560) & (y > 0) & (x <= 640) & (y < 480)) ? 1 : 0;
     
-//    assign VGA_Red[3] = sq_a | sq_d | sq_g;
-//    assign VGA_Green[3] = sq_a | sq_b | sq_e;
-//    assign VGA_Blue[3] = sq_a | sq_c | sq_f;
     always @(posedge clk) begin
-        if (sq_a) begin //white square
+        if (block_exists[0]) begin //white square
             VGA_Red <= 15;
             VGA_Green <= 15;
             VGA_Blue <= 15;
         end
-        if (sq_b) begin //yellow square
+        if (block_exists[1]) begin //yellow square
             VGA_Red <= 15;
             VGA_Green <= 15;
             VGA_Blue <= 0;
         end
-        if (sq_c) begin //light blue square
+        if (block_exists[2]) begin //light blue square
             VGA_Red <= 11;
             VGA_Green <= 11;
             VGA_Blue <= 15;
         end
-        if (sq_d) begin //green square
+        if (block_exists[3]) begin //green square
             VGA_Red <= 0;
             VGA_Green <= 10;
             VGA_Blue <= 0;
         end
-        if (sq_e) begin //purple square
+        if (block_exists[4]) begin //purple square
             VGA_Red <= 12;
             VGA_Green <= 0;
             VGA_Blue <= 12;
         end
-        if (sq_f) begin //pink square
+        if (block_exists[5]) begin //pink square
             VGA_Red <= 15;
             VGA_Green <= 10;
             VGA_Blue <= 10;
         end
-        if (sq_g) begin //dark blue square
+        if (block_exists[6]) begin //dark blue square
             VGA_Red <= 0;
             VGA_Green <= 0;
             VGA_Blue <= 12;
         end
-        if (sq_h) begin // black square
+        if (block_exists[7]) begin // black square
             VGA_Red <= 0;
             VGA_Green <= 0;
             VGA_Blue <= 0;
