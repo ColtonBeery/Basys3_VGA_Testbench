@@ -10,3 +10,5 @@
 !*.md
 !*.xpr
 !*.jpg
+!*.xdc
+VGA_Testbench.runs/synth_1/.Xil/top_propImpl.xdc
