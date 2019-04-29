@@ -12,3 +12,5 @@
 !*.jpg
 !*.xdc
 VGA_Testbench.runs/synth_1/.Xil/top_propImpl.xdc
+!LICENSE
+!WillGreen_MIT_LICENSE.txt
