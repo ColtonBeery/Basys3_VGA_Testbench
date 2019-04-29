@@ -46,7 +46,7 @@ module top(
     always @(posedge clk) begin
         case (mode)
             0: begin
-                for (counter1 = 0; counter1 < 8; counter1 = counter1 + 1) begin
+                for (counter1 = 0; counter1 < 8; counter1 = counter1 + 1) begin //Vivado lets me use a for loop here but not below? 
                     if ((x < MAX_X) & (x > 0) & (y < MAX_Y) | (y > 0))
                         block_exists[counter1] <= ((x > ((MAX_X/8)*counter1)) & (y > 0) & (x <= ((MAX_X/8)*(counter1+1))) & (y < 480)) ? 1 : 0;
                     else 
@@ -56,7 +56,7 @@ module top(
             end
             1: begin
                 counter1 <= 0;
-                repeat (15) begin
+                repeat (16) begin //16 blocks. Why won't Vivado let me use a for loop? 
                     if ((x < MAX_X) & (x > 0) & (y < MAX_Y) | (y > 0))
                         block_exists[counter1] <= ((x > ((MAX_X/16)*counter1)) & (y > 0) & (x <= ((MAX_X/16)*(counter1+1))) & (y < 480)) ? 1 : 0;
                     else 
@@ -115,7 +115,7 @@ module top(
             end //end full color bars
             1: begin//black and white bars
                 counter2 <= 0;
-                repeat (15) begin
+                repeat (16) begin //16 blocks. Why won't Vivado let me use a for loop? 
                     if (block_exists[counter2]) begin // black square
                         VGA_Red <= counter2;
                         VGA_Green <= counter2;
