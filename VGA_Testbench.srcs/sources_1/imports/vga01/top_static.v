@@ -123,12 +123,12 @@ module top(
             
             3: begin //Checkerboard
                 counter1 <= 0;
-                repeat (4) begin //16 blocks. Why won't Vivado let me use a for loop? 
+                repeat (8) begin //16 blocks. Why won't Vivado let me use a for loop? 
                     if ((x < SCREENSIZE_X) & (x > 0) & (y < SCREENSIZE_Y) | (y > 0))
-                        block_exists[counter1] <= ((x > ((SCREENSIZE_X/16)*counter1)) & (y > 0) & (x <= ((SCREENSIZE_X/16)*(counter1+1))) & (y < 480)) ? 1 : 0;
+                        block_exists[counter1] <= ((x > ((SCREENSIZE_X/16)*(2*counter1))) & (y > 0) & (x < ((SCREENSIZE_X/16)*((2*counter1)+1))) & (y < 480)) ? 1 : 0;
                     else 
                         block_exists[counter1] <= 0;
-                    counter1 <= counter1 + 2;
+                    counter1 <= counter1 + 1;
                 end
             end
             
@@ -204,7 +204,7 @@ module top(
             
             3: begin //Checkerboard
                 counter2 <= 0;
-                repeat (4) begin //16 blocks. Ghetto for loop because Vivado is dumb.  
+                repeat (8) begin //16 blocks. Ghetto for loop because Vivado is dumb.  
                     if (block_exists[counter2]) begin // black square
                         VGA_Red <= 15;
                         VGA_Green <= 15;
