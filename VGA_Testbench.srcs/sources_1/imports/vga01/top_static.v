@@ -47,7 +47,7 @@ module top(
     wire [11:0] sq_c_x1, sq_c_x2, sq_c_y1, sq_c_y2;
     
      wire collision_a, collision_b, collision_c;
-     square #(.IX(160), .IY(120), .H_SIZE(60)) sq_a_anim (
+    square #(.IX(160), .IY(120), .H_SIZE(60)) sq_a_anim (
         .i_clk(clk), 
         .i_ani_stb(pix_stb),
         .i_rst(rst),
@@ -55,8 +55,7 @@ module top(
         .o_x1(sq_a_x1),
         .o_x2(sq_a_x2),
         .o_y1(sq_a_y1),
-        .o_y2(sq_a_y2),
-        .collision(collision_a)
+        .o_y2(sq_a_y2)
     );
 
     square #(.IX(320), .IY(240), .IY_DIR(0)) sq_b_anim (
@@ -67,8 +66,7 @@ module top(
         .o_x1(sq_b_x1),
         .o_x2(sq_b_x2),
         .o_y1(sq_b_y1),
-        .o_y2(sq_b_y2),
-        .collision(collision_b)
+        .o_y2(sq_b_y2)
     );    
 
     square #(.IX(480), .IY(360), .H_SIZE(100)) sq_c_anim (
@@ -79,8 +77,7 @@ module top(
         .o_x1(sq_c_x1),
         .o_x2(sq_c_x2),
         .o_y1(sq_c_y1),
-        .o_y2(sq_c_y2),
-        .collision(collision_c)
+        .o_y2(sq_c_y2)
     );
     
     reg [11:0] sq_a_color = 12'b101001100010;
@@ -117,9 +114,10 @@ module top(
             end //end case 1
             
             2: begin //Bouncing Shapes
-                block_exists[0] = ((x > sq_a_x1) & (y > sq_a_y1) & (x < sq_a_x2) & (y < sq_a_y2)) ? 1 : 0;
-                block_exists[1] = ((x > sq_b_x1) & (y > sq_b_y1) & (x < sq_b_x2) & (y < sq_b_y2)) ? 1 : 0;
-                block_exists[2] = ((x > sq_c_x1) & (y > sq_c_y1) & (x < sq_c_x2) & (y < sq_c_y2)) ? 1 : 0;
+                block_exists[0] <= ((x > sq_a_x1) & (y > sq_a_y1) & (x < sq_a_x2) & (y < sq_a_y2)) ? 1 : 0;
+                block_exists[1] <= ((x > sq_b_x1) & (y > sq_b_y1) & (x < sq_b_x2) & (y < sq_b_y2)) ? 1 : 0;
+                block_exists[2] <= ((x > sq_c_x1) & (y > sq_c_y1) & (x < sq_c_x2) & (y < sq_c_y2)) ? 1 : 0;
+                block_exists[3:15] <= 0;                
             end //end case 2
             
             default: 
@@ -195,11 +193,11 @@ module top(
                 if(block_exists[2])
                     VGA_Blue <= sq_c_color[3:0];
                 if(collision_a)
-                    sq_a_color = {sq_a_color[0], sq_a_color[11:1]};
+                    sq_a_color <= {sq_a_color[1:0], sq_a_color[11:2]};
                  if(collision_b)
-                    sq_b_color = {sq_b_color[0], sq_b_color[11:1]};
+                    sq_b_color <= {sq_b_color[1:0], sq_b_color[11:2]};
                  if(collision_c)
-                    sq_c_color = {sq_c_color[0], sq_c_color[11:1]};
+                    sq_c_color <= {sq_c_color[1:0], sq_c_color[11:2]};
             end
             
             default: begin //if error, whole screen white
