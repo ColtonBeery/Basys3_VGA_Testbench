@@ -46,6 +46,7 @@ module top(
     wire [11:0] sq_b_x1, sq_b_x2, sq_b_y1, sq_b_y2;
     wire [11:0] sq_c_x1, sq_c_x2, sq_c_y1, sq_c_y2;
     
+     wire collision_a, collision_b, collision_c;
      square #(.IX(160), .IY(120), .H_SIZE(60)) sq_a_anim (
         .i_clk(clk), 
         .i_ani_stb(pix_stb),
@@ -54,7 +55,8 @@ module top(
         .o_x1(sq_a_x1),
         .o_x2(sq_a_x2),
         .o_y1(sq_a_y1),
-        .o_y2(sq_a_y2)
+        .o_y2(sq_a_y2),
+        .collision(collision_a)
     );
 
     square #(.IX(320), .IY(240), .IY_DIR(0)) sq_b_anim (
@@ -65,7 +67,8 @@ module top(
         .o_x1(sq_b_x1),
         .o_x2(sq_b_x2),
         .o_y1(sq_b_y1),
-        .o_y2(sq_b_y2)
+        .o_y2(sq_b_y2),
+        .collision(collision_b)
     );    
 
     square #(.IX(480), .IY(360), .H_SIZE(100)) sq_c_anim (
@@ -76,8 +79,14 @@ module top(
         .o_x1(sq_c_x1),
         .o_x2(sq_c_x2),
         .o_y1(sq_c_y1),
-        .o_y2(sq_c_y2)
+        .o_y2(sq_c_y2),
+        .collision(collision_c)
     );
+    
+    reg [11:0] sq_a_color = 12'b101001100010;
+    reg [11:0] sq_b_color = 12'b110010100100;
+    reg [11:0] sq_c_color = 12'b000000001010;
+    
     
     reg [1:0] mode = 0;
     
@@ -118,6 +127,7 @@ module top(
         endcase
     end
     
+    reg [4:0] r,g,b;
     // color the display
     always @(posedge clk) begin
         mode <= IO_SWITCH;
@@ -179,11 +189,17 @@ module top(
             
             2: begin //Bouncing Shapes
                 if(block_exists[0])
-                    VGA_Red <= 10;
+                    VGA_Red <= sq_a_color[11:8];
                 if(block_exists[1])
-                    VGA_Green <= 10;
+                    VGA_Green <= sq_b_color[7:4];
                 if(block_exists[2])
-                    VGA_Blue <= 10;
+                    VGA_Blue <= sq_c_color[3:0];
+                if(collision_a)
+                    sq_a_color = {sq_a_color[0], sq_a_color[11:1]};
+                 if(collision_b)
+                    sq_b_color = {sq_b_color[0], sq_b_color[11:1]};
+                 if(collision_c)
+                    sq_c_color = {sq_c_color[0], sq_c_color[11:1]};
             end
             
             default: begin //if error, whole screen white

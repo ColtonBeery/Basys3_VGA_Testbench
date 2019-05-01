@@ -21,7 +21,8 @@ module square #(
     output wire [11:0] o_x1,  // square left edge: 12-bit value: 0-4095
     output wire [11:0] o_x2,  // square right edge
     output wire [11:0] o_y1,  // square top edge
-    output wire [11:0] o_y2   // square bottom edge
+    output wire [11:0] o_y2,   // square bottom edge
+    output reg collision
     );
 
     reg [11:0] x = IX;   // horizontal position of square centre
@@ -57,5 +58,9 @@ module square #(
             if (y >= (D_HEIGHT - H_SIZE - 1))  // edge of square at bottom
                 y_dir <= 0;  // change direction to up              
         end
+        if (((x <= H_SIZE + 1)|(x >= (D_WIDTH - H_SIZE - 1))|(y <= H_SIZE + 1)|(y >= (D_HEIGHT - H_SIZE - 1))))
+                collision <= 1;
+        else
+                collision <= 0;
     end
 endmodule
