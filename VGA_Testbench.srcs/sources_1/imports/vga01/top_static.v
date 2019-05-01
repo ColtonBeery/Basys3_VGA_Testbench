@@ -41,43 +41,43 @@ module top(
         .o_y(y), 
         .o_animate(animate)
     );
-    wire redblock, greenblock, blueblock;
-    square #(.IX(160), .IY(120), .H_SIZE(60)) sq_a_anim (
+    
+    wire [11:0] sq_a_x1, sq_a_x2, sq_a_y1, sq_a_y2;  // 12-bit values: 0-4095 
+    wire [11:0] sq_b_x1, sq_b_x2, sq_b_y1, sq_b_y2;
+    wire [11:0] sq_c_x1, sq_c_x2, sq_c_y1, sq_c_y2;
+    
+     square #(.IX(160), .IY(120), .H_SIZE(60)) sq_a_anim (
         .i_clk(clk), 
         .i_ani_stb(pix_stb),
         .i_rst(rst),
         .i_animate(animate),
-//        .o_x1(sq_a_x1),
-//        .o_x2(sq_a_x2),
-//        .o_y1(sq_a_y1),
-//        .o_y2(sq_a_y2)
-        .exists(redblock)
+        .o_x1(sq_a_x1),
+        .o_x2(sq_a_x2),
+        .o_y1(sq_a_y1),
+        .o_y2(sq_a_y2)
     );
-    
+
     square #(.IX(320), .IY(240), .IY_DIR(0)) sq_b_anim (
         .i_clk(clk), 
         .i_ani_stb(pix_stb),
         .i_rst(rst),
         .i_animate(animate),
-//        .o_x1(sq_a_x1),
-//        .o_x2(sq_a_x2),
-//        .o_y1(sq_a_y1),
-//        .o_y2(sq_a_y2)
-        .exists(greenblock)
-    ); 
-    
+        .o_x1(sq_b_x1),
+        .o_x2(sq_b_x2),
+        .o_y1(sq_b_y1),
+        .o_y2(sq_b_y2)
+    );    
+
     square #(.IX(480), .IY(360), .H_SIZE(100)) sq_c_anim (
         .i_clk(clk), 
         .i_ani_stb(pix_stb),
         .i_rst(rst),
         .i_animate(animate),
-//        .o_x1(sq_a_x1),
-//        .o_x2(sq_a_x2),
-//        .o_y1(sq_a_y1),
-//        .o_y2(sq_a_y2)
-        .exists(blueblock)
-    ); 
-    
+        .o_x1(sq_c_x1),
+        .o_x2(sq_c_x2),
+        .o_y1(sq_c_y1),
+        .o_y2(sq_c_y2)
+    );
     
     reg [1:0] mode = 0;
     
@@ -108,7 +108,9 @@ module top(
             end //end case 1
             
             2: begin //Bouncing Shapes
-                //nothing here, all inside block module
+                block_exists[0] = ((x > sq_a_x1) & (y > sq_a_y1) & (x < sq_a_x2) & (y < sq_a_y2)) ? 1 : 0;
+                block_exists[1] = ((x > sq_b_x1) & (y > sq_b_y1) & (x < sq_b_x2) & (y < sq_b_y2)) ? 1 : 0;
+                block_exists[2] = ((x > sq_c_x1) & (y > sq_c_y1) & (x < sq_c_x2) & (y < sq_c_y2)) ? 1 : 0;
             end //end case 2
             
             default: 
@@ -176,11 +178,11 @@ module top(
             end //end black and white bars
             
             2: begin //Bouncing Shapes
-                if(redblock)
+                if(block_exists[0])
                     VGA_Red <= 10;
-                if(greenblock)
+                if(block_exists[1])
                     VGA_Green <= 10;
-                if(blueblock)
+                if(block_exists[2])
                     VGA_Blue <= 10;
             end
             
