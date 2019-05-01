@@ -60,6 +60,15 @@
   <FileSets Version="1" Minor="31">
     <FileSet Name="sources_1" Type="DesignSrcs" RelSrcDir="$PSRCDIR/sources_1">
       <Filter Type="Srcs"/>
+      <File Path="$PSRCDIR/sources_1/imports/vga01/square.v">
+        <FileInfo>
+          <Attr Name="ImportPath" Val="$PPRDIR/../VGATutorial/vga01/square.v"/>
+          <Attr Name="ImportTime" Val="1554921133"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
       <File Path="$PSRCDIR/sources_1/imports/vga01/vga640x480.v">
         <FileInfo>
           <Attr Name="ImportPath" Val="$PPRDIR/../VGATutorial/vga01/vga640x480.v"/>
