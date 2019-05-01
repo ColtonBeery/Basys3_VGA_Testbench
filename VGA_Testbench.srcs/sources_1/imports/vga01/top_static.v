@@ -28,64 +28,65 @@ module top(
     wire [8:0] y;  // current pixel y position:  9-bit value: 0-511
     wire animate;  // high when we're ready to animate at end of drawing
     
-    localparam SCREENSIZE_X = 640;
-    localparam SCREENSIZE_Y = 480;
+    localparam SCREENSIZE_X = 640; //Number of X pixels in the screen
+    localparam SCREENSIZE_Y = 480; //Number of Y pixels in the screen
     
     vga640x480 display (
-        .i_clk(clk),
-        .i_pix_stb(pix_stb),
-        .i_rst(rst),
-        .o_hs(VGA_Hsync), 
-        .o_vs(VGA_Vsync), 
-        .o_x(x), 
-        .o_y(y), 
-        .o_animate(animate)
+        .i_clk(clk),            // base clock
+        .i_pix_stb(pix_stb),    // pixel clock strobe
+        .i_rst(rst),            // reset: restarts frame
+        .o_hs(VGA_Hsync),       // horizontal sync
+        .o_vs(VGA_Vsync),       // vertical sync
+        .o_x(x),                // current pixel x position
+        .o_y(y),                // current pixel y position
+        .o_animate(animate)     // high for one tick at end of active drawing
     );
     
+    //Square edges for mode 3 - Bouncing Squares
     wire [11:0] sq_a_x1, sq_a_x2, sq_a_y1, sq_a_y2;  // 12-bit values: 0-4095 
     wire [11:0] sq_b_x1, sq_b_x2, sq_b_y1, sq_b_y2;
     wire [11:0] sq_c_x1, sq_c_x2, sq_c_y1, sq_c_y2;
     
-     wire collision_a, collision_b, collision_c;
     square #(.IX(160), .IY(120), .H_SIZE(60)) sq_a_anim (
-        .i_clk(clk), 
-        .i_ani_stb(pix_stb),
-        .i_rst(rst),
-        .i_animate(animate),
-        .o_x1(sq_a_x1),
-        .o_x2(sq_a_x2),
-        .o_y1(sq_a_y1),
-        .o_y2(sq_a_y2)
+        .i_clk(clk),            // base clock
+        .i_ani_stb(pix_stb),    // animation clock: pixel clock is 1 pix/frame
+        .i_rst(rst),            // reset: returns animation to starting position
+        .i_animate(animate),    // animate when input is high
+        .o_x1(sq_a_x1),         // square left edge: 12-bit value: 0-4095
+        .o_x2(sq_a_x2),         // square right edge
+        .o_y1(sq_a_y1),         // square top edge
+        .o_y2(sq_a_y2)          // square bottom edge
     );
 
     square #(.IX(320), .IY(240), .IY_DIR(0)) sq_b_anim (
-        .i_clk(clk), 
-        .i_ani_stb(pix_stb),
-        .i_rst(rst),
-        .i_animate(animate),
-        .o_x1(sq_b_x1),
-        .o_x2(sq_b_x2),
-        .o_y1(sq_b_y1),
-        .o_y2(sq_b_y2)
+        .i_clk(clk),            // base clock
+        .i_ani_stb(pix_stb),    // animation clock: pixel clock is 1 pix/frame
+        .i_rst(rst),            // reset: returns animation to starting position
+        .i_animate(animate),    // animate when input is high
+        .o_x1(sq_b_x1),         // square left edge: 12-bit value: 0-4095
+        .o_x2(sq_b_x2),         // square right edge
+        .o_y1(sq_b_y1),         // square top edge
+        .o_y2(sq_b_y2)          // square bottom edge
     );    
 
     square #(.IX(480), .IY(360), .H_SIZE(100)) sq_c_anim (
-        .i_clk(clk), 
-        .i_ani_stb(pix_stb),
-        .i_rst(rst),
-        .i_animate(animate),
-        .o_x1(sq_c_x1),
-        .o_x2(sq_c_x2),
-        .o_y1(sq_c_y1),
-        .o_y2(sq_c_y2)
+        .i_clk(clk),            // base clock
+        .i_ani_stb(pix_stb),    // animation clock: pixel clock is 1 pix/frame
+        .i_rst(rst),            // reset: returns animation to starting position
+        .i_animate(animate),    // animate when input is high
+        .o_x1(sq_c_x1),         // square left edge: 12-bit value: 0-4095
+        .o_x2(sq_c_x2),         // square right edge
+        .o_y1(sq_c_y1),         // square top edge
+        .o_y2(sq_c_y2)          // square bottom edge
     );
     
+    // Assign color of blocks
     reg [11:0] sq_a_color = 12'b101001100010;
     reg [11:0] sq_b_color = 12'b110010100100;
-    reg [11:0] sq_c_color = 12'b000000001010;
+    reg [11:0] sq_c_color = 12'b011000101010;
     
     
-    reg [1:0] mode = 0;
+    reg [1:0] mode = 0; // Mode selection 
     
     //block existence
     reg [3:0] counter1, counter2;
@@ -125,7 +126,6 @@ module top(
         endcase
     end
     
-    reg [4:0] r,g,b;
     // color the display
     always @(posedge clk) begin
         mode <= IO_SWITCH;
@@ -171,11 +171,11 @@ module top(
                     VGA_Green <= 0;
                     VGA_Blue <= 0;
                 end //end black square
-            end //end full color bars
+            end //End Vertical Color Bars
             
-            1: begin //Grayscale Color Bars
+            1: begin //Grayscale Bars
                 counter2 <= 0;
-                repeat (16) begin //16 blocks. Why won't Vivado let me use a for loop? 
+                repeat (16) begin //16 blocks. Ghetto for loop because Vivado is dumb.  
                     if (block_exists[counter2]) begin // black square
                         VGA_Red <= counter2;
                         VGA_Green <= counter2;
@@ -183,30 +183,19 @@ module top(
                     end
                     counter2 <= counter2 + 1;
                 end
-            end //end black and white bars
+            end //End Grayscale Bars
             
             2: begin //Bouncing Shapes
-//                if(block_exists[0])
-//                    VGA_Red <= sq_a_color[11:8];
-//                if(block_exists[1])
-//                    VGA_Green <= sq_b_color[7:4];
-//                if(block_exists[2])
-//                    VGA_Blue <= sq_c_color[3:0];
-//                if(block_exists == 0) begin
-//                    VGA_Red <= 0;
-//                    VGA_Green <= 0;
-//                    VGA_Blue <= 0;
-//                end
                   VGA_Red <= ({4{block_exists[0]}} & sq_a_color[11:8]);
                   VGA_Green <= ({4{block_exists[1]}} & sq_b_color[7:4]);
                   VGA_Blue <= ({4{block_exists[2]}} & sq_c_color[3:0]);
-            end
+            end //End Bouncing Shapes
             
             default: begin //if error, whole screen white
                 VGA_Red <= 15;
                 VGA_Green <= 15;
                 VGA_Blue <= 15;
-            end
+            end //end default
         endcase
         
         // Clean up if x or y gets out of bounds
@@ -214,6 +203,6 @@ module top(
             VGA_Red <= 0;
             VGA_Green <= 0;
             VGA_Blue <= 0;
-        end
+        end //end cleanup
     end 
 endmodule
