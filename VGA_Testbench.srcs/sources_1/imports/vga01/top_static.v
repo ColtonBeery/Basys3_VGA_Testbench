@@ -186,18 +186,20 @@ module top(
             end //end black and white bars
             
             2: begin //Bouncing Shapes
-                if(block_exists[0])
-                    VGA_Red <= sq_a_color[11:8];
-                if(block_exists[1])
-                    VGA_Green <= sq_b_color[7:4];
-                if(block_exists[2])
-                    VGA_Blue <= sq_c_color[3:0];
-                if(block_exists == 0) begin
-                    VGA_Red <= 0;
-                    VGA_Green <= 0;
-                    VGA_Blue <= 0;
-                end
-
+//                if(block_exists[0])
+//                    VGA_Red <= sq_a_color[11:8];
+//                if(block_exists[1])
+//                    VGA_Green <= sq_b_color[7:4];
+//                if(block_exists[2])
+//                    VGA_Blue <= sq_c_color[3:0];
+//                if(block_exists == 0) begin
+//                    VGA_Red <= 0;
+//                    VGA_Green <= 0;
+//                    VGA_Blue <= 0;
+//                end
+                  VGA_Red <= ({4{block_exists[0]}} & sq_a_color[11:8]);
+                  VGA_Green <= ({4{block_exists[1]}} & sq_b_color[7:4]);
+                  VGA_Blue <= ({4{block_exists[2]}} & sq_c_color[3:0]);
             end
             
             default: begin //if error, whole screen white
