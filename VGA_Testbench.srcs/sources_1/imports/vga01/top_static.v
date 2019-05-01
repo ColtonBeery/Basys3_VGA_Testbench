@@ -192,12 +192,12 @@ module top(
                     VGA_Green <= sq_b_color[7:4];
                 if(block_exists[2])
                     VGA_Blue <= sq_c_color[3:0];
-                if(collision_a)
-                    sq_a_color <= {sq_a_color[1:0], sq_a_color[11:2]};
-                 if(collision_b)
-                    sq_b_color <= {sq_b_color[1:0], sq_b_color[11:2]};
-                 if(collision_c)
-                    sq_c_color <= {sq_c_color[1:0], sq_c_color[11:2]};
+                if(block_exists == 0) begin
+                    VGA_Red <= 0;
+                    VGA_Green <= 0;
+                    VGA_Blue <= 0;
+                end
+
             end
             
             default: begin //if error, whole screen white
