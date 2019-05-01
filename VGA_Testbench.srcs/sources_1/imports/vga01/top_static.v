@@ -121,6 +121,17 @@ module top(
                 block_exists[3:15] <= 0;                
             end //end case 2
             
+            3: begin //Checkerboard
+                counter1 <= 0;
+                repeat (4) begin //16 blocks. Why won't Vivado let me use a for loop? 
+                    if ((x < SCREENSIZE_X) & (x > 0) & (y < SCREENSIZE_Y) | (y > 0))
+                        block_exists[counter1] <= ((x > ((SCREENSIZE_X/16)*counter1)) & (y > 0) & (x <= ((SCREENSIZE_X/16)*(counter1+1))) & (y < 480)) ? 1 : 0;
+                    else 
+                        block_exists[counter1] <= 0;
+                    counter1 <= counter1 + 2;
+                end
+            end
+            
             default: 
                 block_exists <= 0;
         endcase
@@ -191,6 +202,21 @@ module top(
                   VGA_Blue <= ({4{block_exists[2]}} & sq_c_color[3:0]);
             end //End Bouncing Shapes
             
+            3: begin //Checkerboard
+                counter2 <= 0;
+                repeat (4) begin //16 blocks. Ghetto for loop because Vivado is dumb.  
+                    if (block_exists[counter2]) begin // black square
+                        VGA_Red <= 15;
+                        VGA_Green <= 15;
+                        VGA_Blue <= 15;
+                    end else begin
+                        VGA_Red <= 0;
+                        VGA_Green <= 0;
+                        VGA_Blue <= 0;
+                    end
+                    counter2 <= counter2 + 1;
+                end
+            end
             default: begin //if error, whole screen white
                 VGA_Red <= 15;
                 VGA_Green <= 15;
